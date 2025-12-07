@@ -1,0 +1,32 @@
+
+--- PYTHON ---
+
+pycache/
+*.py[cod]
+*$py.class
+venv/
+env/
+
+--- DONNÉES SENSIBLES & DYNAMIQUES ---
+
+On ignore le contenu, mais on veut garder le dossier (via setup.sh)
+
+keys/*
+generated/*
+!keys/.gitkeep
+!generated/.gitkeep
+
+--- GROS FICHIERS (DISQUES VM) ---
+
+keys/
+generated/
+*.qcow2
+*.img
+*.iso
+*.pub
+--- FICHIERS SYSTÈME ---
+
+.DS_Store
+Thumbs.db
+
+Note : Le dossier static/ est INCLUS par défaut, donc le mode offline marchera.
