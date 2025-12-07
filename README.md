@@ -19,25 +19,25 @@ Un mini-cloud privé complet permettant de déployer, gérer et monitorer des in
 Ce projet est conçu pour fonctionner sur Linux (Ubuntu/Debian) avec un processeur supportant la virtualisation (VT-x/AMD-V).
 
 1. Cloner le dépôt
-
+```bash
 git clone [https://github.com/schawil/nexus-cloud.git]
 cd nexus-cloud
-
+```
 
 2. Lancer l'installation automatique
-
+```bash
 Ce script installe KVM, configure le réseau et télécharge les images Cloud officielles (Ubuntu & Debian).
 
 chmod +x setup.sh
 sudo ./setup.sh
-
+```
 
 > Note : Une fois l'installation terminée, il est conseillé de redémarrer votre session pour appliquer les droits de groupe.
 
 3. Démarrer le serveur
-
+```bash
 sudo python3 app.py
-
+```
 
 Ouvrez votre navigateur sur : [http://localhost:5000]
 
@@ -56,11 +56,13 @@ Pour vous connecter :
 Ouvrez un terminal et tapez :
 
 # 1. Sécuriser la clé (Obligatoire pour que SSH l'accepte)
+```bash
 chmod 600 ~/Downloads/ma-cle-projet
-
+```
 # 2. Connexion
+```bash
 ssh -i ~/Downloads/ma-cle-projet admin@ADRESSE_IP
-
+```
 
 > L'adresse IP est affichée sur le Dashboard une fois la VM démarrée.
 > admin ici doit être remplacé par le nom de l'utilisateur créé.
