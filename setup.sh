@@ -31,6 +31,7 @@ fi
 echo -e "${GREEN}[+] Installation des paquets KVM & Python...${NC}"
 apt update -qq
 # Installation silencieuse (-y) des outils de virtualisation et de l'iso maker
+
 apt install -y qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils virt-manager python3-pip cloud-image-utils net-tools python3-flask python3-libvirt
 
 # 4. GESTION DES IMAGES CLOUD (TÉLÉCHARGEMENT AUTO)
@@ -38,6 +39,7 @@ IMAGE_DIR="/var/lib/libvirt/images/base-images"
 echo -e "${GREEN}[+] Configuration du stockage d'images : $IMAGE_DIR${NC}"
 mkdir -p $IMAGE_DIR
 # On donne les droits de lecture à tout le monde sur les images de base
+# Vous pouvez restreindre cela selon vos besoins
 chmod 755 /var/lib/libvirt/images/
 
 # --- UBUNTU 22.04 ---
@@ -48,7 +50,7 @@ else
     echo "-> Image Ubuntu détectée (OK)."
 fi
 
-# --- DEBIAN 12 ---
+# ---  DEBIAN 12  ---
 if [ ! -f "$IMAGE_DIR/debian-12-generic-amd64.qcow2" ]; then
     echo "-> Téléchargement de l'image Debian 12..."
     wget -q --show-progress -O $IMAGE_DIR/debian-12-generic-amd64.qcow2 https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-generic-amd64.qcow2

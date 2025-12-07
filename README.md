@@ -1,34 +1,33 @@
-☁️ NEXUS CLOUD - Orchestrateur IaaS
+# ☁️ NEXUS CLOUD - Orchestrateur IaaS
 
 Un mini-cloud privé complet permettant de déployer, gérer et monitorer des instances virtuelles (Ubuntu/Debian) en quelques secondes.
 
-✨ Points Forts
+---
 
-🚀 Provisioning Turbo : Déploiement en ~30 secondes (Optimisation Cloud-init & Netplan).
+## ✨ Points Forts
 
-🔒 Sécurité Avancée : Gestion automatique des clés SSH et expiration forcée des mots de passe.
+*   **🚀 Provisioning Turbo :** Déploiement en ~30 secondes (Optimisation Cloud-init & Netplan).
+*   **🔒 Sécurité Avancée :** Gestion automatique des clés SSH et expiration forcée des mots de passe.
+*   **📊 Monitoring Réel :** Tableau de bord temps réel (CPU Différentiel, RAM RSS).
+*   **🎨 Interface Moderne :** Design Glassmorphism, entièrement responsive.
+*   **🔌 Mode Offline :** Toutes les librairies (Bootstrap, Chart.js) sont incluses. Aucune connexion internet requise pour l'interface.
 
-📊 Monitoring Réel : Tableau de bord temps réel (CPU Différentiel, RAM RSS).
+---
 
-🎨 Interface Moderne : Design Glassmorphism, entièrement responsive.
-
-🔌 Mode Offline : Toutes les librairies (Bootstrap, Chart.js) sont incluses. Aucune connexion internet requise pour l'interface.
-
-🛠️ Installation
-
-Ce projet est conçu pour fonctionner sur Linux (Ubuntu/Debian) avec un processeur supportant la virtualisation (VT-x/AMD-V).
-
+## 🛠️ Installation
 1. Cloner le dépôt
+
 ```bash
 git clone [https://github.com/schawil/nexus-cloud.git]
 cd nexus-cloud
 ```
 
 2. Lancer l'installation automatique
+
 ```bash
 Ce script installe KVM, configure le réseau et télécharge les images Cloud officielles (Ubuntu & Debian).
 
-chmod +x setup.sh
+chmod +x setup.sh  
 sudo ./setup.sh
 ```
 
@@ -55,11 +54,11 @@ Pour vous connecter :
 
 Ouvrez un terminal et tapez :
 
-# 1. Sécuriser la clé (Obligatoire pour que SSH l'accepte)
+## 1. Sécuriser la clé (Obligatoire pour que SSH l'accepte)
 ```bash
 chmod 600 ~/Downloads/ma-cle-projet
 ```
-# 2. Connexion
+## 2. Connexion
 ```bash
 ssh -i ~/Downloads/ma-cle-projet admin@ADRESSE_IP
 ```
