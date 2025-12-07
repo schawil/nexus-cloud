@@ -72,6 +72,7 @@ Backend : Python Flask + Libvirt API.
 
 Hyperviseur : KVM / QEMU (Format qcow2 avec Backing Files).
 
+
 Frontend : HTML5, Bootstrap 5 (Local), Chart.js (Local).
 
 Orchestration : Cloud-init (User Data & Meta Data injection via ISO).

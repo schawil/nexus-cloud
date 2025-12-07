@@ -72,9 +72,9 @@ if [ -n "$SUDO_USER" ]; then
     echo "-> Utilisateur $SUDO_USER ajouté au groupe libvirt."
 fi
 
-echo -e "${BLUE}=========================================${NC}"
+echo -e "${BLUE}===========================================${NC}"
 echo -e "${GREEN}   INSTALLATION TERMINÉE AVEC SUCCÈS !   ${NC}"
-echo -e "${BLUE}=========================================${NC}"
+echo -e "${BLUE}===========================================${NC}"
 echo "1. Redémarrez votre session (Logout/Login) pour valider les droits KVM."
 echo "2. Lancez l'application : sudo python3 app.py"
 echo "3. Accédez à : http://localhost:5000"
