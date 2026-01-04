@@ -12,12 +12,12 @@ from flask import Flask, render_template, request, jsonify, send_file
 
 app = Flask(__name__)
 
-# --- CONFIGURATION ---
+# --- CONFIGURATION (MODE LOCAL / TOUT-EN-UN) ---
 VM_STORAGE_DIR = "/var/lib/libvirt/images"
 BASE_IMG_DIR = "/var/lib/libvirt/images/base-images"
 GEN_DIR = os.path.join(os.getcwd(), 'generated')
 KEYS_DIR = os.path.join(os.getcwd(), 'keys')
-METADATA_FILE = os.path.join(os.getcwd(), 'vm_metadata.json') # Base de données légère
+METADATA_FILE = os.path.join(os.getcwd(), 'vm_metadata.json')
 
 os.makedirs(GEN_DIR, exist_ok=True)
 os.makedirs(KEYS_DIR, exist_ok=True)
@@ -27,7 +27,6 @@ OS_IMAGES = {
     'debian': os.path.join(BASE_IMG_DIR, "debian-12-generic-amd64.qcow2")
 }
 
-# --- GESTION PERSISTANCE (Username) ---
 def load_metadata():
     if os.path.exists(METADATA_FILE):
         try:
@@ -49,14 +48,13 @@ def get_libvirt_conn():
 def index():
     return render_template('index.html')
 
-# --- API MONITORING ---
 @app.route('/api/monitor')
 def monitor_api():
     conn = get_libvirt_conn()
     if not conn: return jsonify({"error": "No KVM connection"}), 500
         
     vms_stats = []
-    metadata = load_metadata() # On charge les infos utilisateurs
+    metadata = load_metadata()
 
     try:
         domains = conn.listAllDomains()
@@ -72,11 +70,9 @@ def monitor_api():
                 ip_addr = "N/A"
                 used_mem_mb = mem / 1024
                 
-                # Récupération du vrai username (sinon 'root' par défaut)
                 vm_user = metadata.get(name, {}).get('user', 'root')
 
                 if state == libvirt.VIR_DOMAIN_RUNNING:
-                    # IP via Leases
                     try:
                         ifaces = dom.interfaceAddresses(libvirt.VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_LEASE)
                         for _, val in ifaces.items():
@@ -87,7 +83,6 @@ def monitor_api():
                                         break
                     except: pass
                     
-                    # RAM RSS
                     try:
                         mem_stats = dom.memoryStats()
                         if 'rss' in mem_stats: used_mem_mb = mem_stats['rss'] / 1024
@@ -97,7 +92,7 @@ def monitor_api():
                     'name': name,
                     'status': status_text,
                     'ip': ip_addr,
-                    'username': vm_user, # On envoie le vrai user au frontend
+                    'username': vm_user,
                     'cpu_time': cputime,
                     'vcpu': ncpu,
                     'max_mem': maxmem / 1024,
@@ -112,7 +107,6 @@ def monitor_api():
     finally:
         if conn: conn.close()
 
-# --- API CONTROL ---
 @app.route('/api/vm/<name>/<action>', methods=['POST'])
 def vm_action(name, action):
     conn = get_libvirt_conn()
@@ -130,7 +124,6 @@ def vm_action(name, action):
             try: os.remove(f"{VM_STORAGE_DIR}/{name}.qcow2")
             except: pass
             
-            # Nettoyage métadonnées
             meta = load_metadata()
             if name in meta:
                 del meta[name]
@@ -141,7 +134,6 @@ def vm_action(name, action):
     finally:
         if conn: conn.close()
 
-# --- DEPLOY ---
 @app.route('/deploy', methods=['POST'])
 def deploy():
     conn = None
@@ -157,14 +149,12 @@ def deploy():
         if not re.match(r'^[a-zA-Z0-9-]+$', hostname): return "Hostname invalide", 400
         if not re.match(r'^[a-z0-9-]+$', username): return "Username invalide", 400
 
-        # Sauvegarde du propriétaire pour plus tard
         meta = load_metadata()
         meta[hostname] = {'user': username, 'created_at': time.time()}
         save_metadata(meta)
 
         base_image_path = OS_IMAGES.get(os_type, OS_IMAGES['ubuntu'])
 
-        # SSH Logic
         ssh_method = request.form.get('ssh_method')
         final_ssh_pub_key = ""
         generated_key_path = None
@@ -207,9 +197,16 @@ def deploy():
         
         ssh_block = f"\n      - {final_ssh_pub_key}" if final_ssh_pub_key else ""
         
+        # --- CLOUD-INIT CORRIGÉ (FIX LOGIN) ---
+        # 1. On RETIRE la ligne 'passwd' qui casse tout (car elle attend un hash)
+        # 2. On laisse 'chpasswd' gérer le mot de passe en clair
+        
+# Remplace la section cloud-init dans ton code (ligne ~150-180)
+
         ud_content = f"""#cloud-config
 hostname: {hostname}
 manage_etc_hosts: true
+
 users:
   - default
   - name: {username}
@@ -218,13 +215,19 @@ users:
     lock_passwd: false
     sudo: ALL=(ALL) NOPASSWD:ALL
     ssh_authorized_keys:{ssh_block}
+
+# C'est ICI le seul endroit où on définit le mot de passe (en clair)
 chpasswd:
   list: |
     {username}:{password}
   expire: true
+
+# Autoriser le mot de passe SSH
 ssh_pwauth: true
+
 package_update: false
 package_upgrade: false
+
 write_files:
   - path: /etc/netplan/99-custom.yaml
     content: |
@@ -233,6 +236,7 @@ write_files:
         ethernets:
           main: {{match: {{name: "e*"}}, dhcp4: true}}
     permissions: '0600'
+
 runcmd:
   - netplan apply
   - systemctl start qemu-guest-agent

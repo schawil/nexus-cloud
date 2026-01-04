@@ -28,7 +28,7 @@ generated/
 --- FICHIERS SYSTÈME ---
 
 *.json
-
+*.envrc
 .DS_Store
 Thumbs.db
 
